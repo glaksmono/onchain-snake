@@ -4,6 +4,7 @@ import { Component } from "react";
 import {
   snakeContract,
   loadLatestPosition,
+  updatePosition
 } from "./util/interact.js";
 
 class OnchainSnake extends Component {
@@ -77,6 +78,7 @@ class OnchainSnake extends Component {
         else if (e.which === 40 && snake.dy === 0) {
             snake.dy = grid;
             snake.dx = 0;
+            updatePosition(snake.x % 800, snake.y % 800, snake.dx, snake.dy, snake.cells);
         }
     }
 
