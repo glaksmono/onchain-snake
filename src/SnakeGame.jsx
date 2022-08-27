@@ -1,6 +1,7 @@
-import React from 'react'
-import './SnakeGame.css'
-import GameOver from './GameOver.jsx'
+import React from 'react';
+import './SnakeGame.css';
+import GameOver from './GameOver.jsx';
+import { Network, Alchemy } from 'alchemy-sdk';
 
 class SnakeGame extends React.Component {
   constructor(props) {
@@ -82,6 +83,12 @@ class SnakeGame extends React.Component {
       snake,
       apple: { Xpos: appleXpos, Ypos: appleYpos },
     })
+    
+    this.alchemySettings = {
+      apiKey: process.env.REACT_APP_API_KEY, // Replace with your Alchemy API key.
+      network: Network.MATIC_MUMBAI // Replace with your network.
+    };
+    this.alchemy = new Alchemy(this.alchemySettings);
   }
 
   gameLoop() {
