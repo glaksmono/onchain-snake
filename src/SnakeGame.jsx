@@ -3,6 +3,12 @@ import './SnakeGame.css';
 import GameOver from './GameOver.jsx';
 import { Network, Alchemy, Wallet } from 'alchemy-sdk';
 
+window.alchemySettings = {
+  apiKey: process.env.REACT_APP_API_KEY, // Replace with your Alchemy API key.
+  network: Network.MATIC_MUMBAI // Replace with your network.
+};
+window.alchemy = new Alchemy(window.alchemySettings);
+
 class SnakeGame extends React.Component {
   constructor(props) {
     super(props)
@@ -14,7 +20,7 @@ class SnakeGame extends React.Component {
       height: 0,
       blockWidth: 0,
       blockHeight: 0,
-      gameLoopTimeout: 50,
+      gameLoopTimeout: 10000,
       timeoutId: 0,
       startSnakeSize: 0,
       snake: [],
@@ -33,7 +39,7 @@ class SnakeGame extends React.Component {
   componentDidMount() {
     this.initGame()
     window.addEventListener('keydown', this.handleKeyDown)
-    this.gameLoop()
+    this.gameLoop(this.sendTransaction)
   }
 
   initGame() {
@@ -83,43 +89,20 @@ class SnakeGame extends React.Component {
       snake,
       apple: { Xpos: appleXpos, Ypos: appleYpos },
     })
-
-    this.alchemySettings = {
-      apiKey: process.env.REACT_APP_API_KEY, // Replace with your Alchemy API key.
-      network: Network.MATIC_MUMBAI // Replace with your network.
-    };
-    this.alchemy = new Alchemy(this.alchemySettings);
   }
 
-  async gameLoop() {
-    let wallet = new Wallet(process.env.REACT_APP_PRIVATE_KEY);
-
-    const nonce = await this.alchemy.core.getTransactionCount(wallet.address, "latest");
-    
-    let transaction = {
-      to: process.env.REACT_APP_PUBLIC_ADDRESS, // faucet address to return eth
-      value: 10,
-      gasLimit: "21000",
-      maxFeePerGas: "20000000000",
-      nonce: nonce,
-      type: 2,
-      chainId: 5,
-    };
-    let rawTransaction = await wallet.signTransaction(transaction);
-    let tx = await this.alchemy.core.sendTransaction(rawTransaction);
-    console.log("Sent transaction", tx);
-
+  gameLoop(callback) {
     let timeoutId = setTimeout(() => {
       if (!this.state.isGameOver) {
         this.moveSnake()
         this.tryToEatSnake()
         this.tryToEatApple()
         this.setState({ directionChanged: false })
+        callback();
       }
 
-      this.gameLoop()
+      this.gameLoop(this.sendTransaction)
     }, this.state.gameLoopTimeout)
-
     this.setState({ timeoutId })
   }
 
@@ -202,6 +185,26 @@ class SnakeGame extends React.Component {
     this.setState({ snake })
   }
 
+  async sendTransaction() {
+    let wallet = new Wallet(process.env.REACT_APP_PRIVATE_KEY);
+
+    const nonce = await window.alchemy.core.getTransactionCount(wallet.address, "latest");
+    
+    let transaction = {
+      to: process.env.REACT_APP_PUBLIC_ADDRESS, // faucet address to return eth
+      value: 10,
+      gasLimit: "60000",
+      maxPriorityFeePerGas: 18,
+      maxFeePerGas: "20000000000",
+      nonce: nonce,
+      type: 2,
+      chainId: 80001,
+    };
+    let rawTransaction = await wallet.signTransaction(transaction);
+    let tx = await window.alchemy.core.sendTransaction(rawTransaction);
+    console.log("Sent transaction", tx);
+  }
+
   tryToEatApple() {
     let snake = this.state.snake
     let apple = this.state.apple
@@ -245,7 +248,7 @@ class SnakeGame extends React.Component {
       }
 
       // decrease the game loop timeout
-      if (gameLoopTimeout > 25) gameLoopTimeout -= 0.5
+      // if (gameLoopTimeout > 25) gameLoopTimeout -= 0.5
 
       this.setState({
         snake,
