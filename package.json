@@ -1,28 +1,30 @@
 {
-  "name": "react-simple-snake",
-  "description": "A simple snake game created with the React JavaScript library",
-  "version": "0.2.2",
+  "name": "onchain-snake",
+  "description": "A onchain snake game",
+  "version": "0.0.1",
   "main": "lib/snake.js",
   "files": [
     "lib"
   ],
   "license": "MIT",
   "author": {
-    "name": "maeldrapier",
-    "email": "mael.drapier@gmail.com"
+    "name": "glaksmono",
+    "email": "grady@laksmono.com"
   },
   "keywords": [
     "react",
     "snake",
     "game",
-    "simple"
+    "onchain"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/MaelDrapier/react-simple-snake.git"
+    "url": "git@github.com:glaksmono/onchain-snake.git"
   },
-  "homepage": "https://maeldrapier.github.io/react-simple-snake",
-  "dependencies": {},
+  "homepage": "https://github.com/glaksmono/onchain-snake",
+  "dependencies": {
+    "alchemy-sdk": "^2.0.3"
+  },
   "peerDependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
@@ -43,6 +45,7 @@
     "@babel/preset-react": "^7.12.5",
     "babel-loader": "^8.2.1",
     "css-loader": "^5.0.1",
+    "dotenv": "^16.0.1",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
