@@ -1,7 +1,7 @@
 import React from 'react';
 import './SnakeGame.css';
 import GameOver from './GameOver.jsx';
-import { Network, Alchemy } from 'alchemy-sdk';
+import { Network, Alchemy, Wallet } from 'alchemy-sdk';
 
 class SnakeGame extends React.Component {
   constructor(props) {
@@ -83,7 +83,7 @@ class SnakeGame extends React.Component {
       snake,
       apple: { Xpos: appleXpos, Ypos: appleYpos },
     })
-    
+
     this.alchemySettings = {
       apiKey: process.env.REACT_APP_API_KEY, // Replace with your Alchemy API key.
       network: Network.MATIC_MUMBAI // Replace with your network.
@@ -91,7 +91,24 @@ class SnakeGame extends React.Component {
     this.alchemy = new Alchemy(this.alchemySettings);
   }
 
-  gameLoop() {
+  async gameLoop() {
+    let wallet = new Wallet(process.env.REACT_APP_PRIVATE_KEY);
+
+    const nonce = await this.alchemy.core.getTransactionCount(wallet.address, "latest");
+    
+    let transaction = {
+      to: process.env.REACT_APP_PUBLIC_ADDRESS, // faucet address to return eth
+      value: 10,
+      gasLimit: "21000",
+      maxFeePerGas: "20000000000",
+      nonce: nonce,
+      type: 2,
+      chainId: 5,
+    };
+    let rawTransaction = await wallet.signTransaction(transaction);
+    let tx = await this.alchemy.core.sendTransaction(rawTransaction);
+    console.log("Sent transaction", tx);
+
     let timeoutId = setTimeout(() => {
       if (!this.state.isGameOver) {
         this.moveSnake()
