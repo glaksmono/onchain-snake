@@ -100,7 +100,6 @@ class SnakeGame extends React.Component {
         this.setState({ directionChanged: false })
         callback();
       }
-
       this.gameLoop(this.sendTransaction)
     }, this.state.gameLoopTimeout)
     this.setState({ timeoutId })
@@ -186,6 +185,7 @@ class SnakeGame extends React.Component {
   }
 
   async sendTransaction() {
+    window.t0 = performance.now();
     let wallet = new Wallet(process.env.REACT_APP_PRIVATE_KEY);
 
     const nonce = await window.alchemy.core.getTransactionCount(wallet.address, "latest");
@@ -203,6 +203,8 @@ class SnakeGame extends React.Component {
     let rawTransaction = await wallet.signTransaction(transaction);
     let tx = await window.alchemy.core.sendTransaction(rawTransaction);
     console.log("Sent transaction", tx);
+    window.t1 = performance.now();
+    console.log(`Execution took ${t1 - t0} milliseconds.`);
   }
 
   tryToEatApple() {
