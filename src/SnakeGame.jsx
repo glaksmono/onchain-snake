@@ -39,7 +39,7 @@ class SnakeGame extends React.Component {
   componentDidMount() {
     this.initGame()
     window.addEventListener('keydown', this.handleKeyDown)
-    this.gameLoop(this.sendTransaction)
+    this.gameLoop()
   }
 
   initGame() {
@@ -91,16 +91,16 @@ class SnakeGame extends React.Component {
     })
   }
 
-  gameLoop(callback) {
+  gameLoop() {
     let timeoutId = setTimeout(() => {
       if (!this.state.isGameOver) {
         this.moveSnake()
         this.tryToEatSnake()
         this.tryToEatApple()
         this.setState({ directionChanged: false })
-        callback();
+        this.sendTransaction();
       }
-      this.gameLoop(this.sendTransaction)
+      this.gameLoop()
     }, this.state.gameLoopTimeout)
     this.setState({ timeoutId })
   }
